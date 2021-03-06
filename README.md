@@ -2,6 +2,17 @@
 
 Code for Paper：KSS-ICP: A Point Cloud Registration Method based on Kendall Shape Space.
 
-KSS-ICP implementation based on C++ project
+This project is implemented by VS2019, C++.
 
-The KSS-ICP is designed by Kendall shape space 
+The addtional libiary should be included:
+
+PCL library 1.8.1
+
+CGAL libiary
+
+OpenGL: freeglut64
+
+Update data:
+2021/3/6 The first version of KSS-ICP, including construction of point cloud representation and alignment. 
+
+
