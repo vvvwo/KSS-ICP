@@ -1,0 +1,10 @@
+ant x:1.56
+Cat y:1.56
+Dog z:1.1
+Girl x: 1.1
+hand x: 1.1
+woodMan y: 1.1
+Angel z: 1.1
+Armadillo x: 1.1
+Bunny x: 1.1
+Horse y: 1.1

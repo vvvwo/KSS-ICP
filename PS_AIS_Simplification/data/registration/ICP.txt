@@ -1,0 +1,13 @@
+success:
+Armadillo
+Bunny
+Cat
+Girl
+Hand
+Horse
+WoodMan
+
+faild：
+Angel
+ant
+Dog
