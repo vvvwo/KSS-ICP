@@ -13,6 +13,7 @@ CGAL libiary
 OpenGL: freeglut64
 
 Update data:
+
 2021/3/6 The first version of KSS-ICP, including construction of point cloud representation and alignment. 
 
 
