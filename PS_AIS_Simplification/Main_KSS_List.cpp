@@ -12,7 +12,7 @@
 
 
 *********************************************************************************/
-
+/*
 #pragma region Include
 #pragma once
 #include "View.h"
@@ -123,38 +123,62 @@ vector<vector<double>> centerTransfer(vector<vector<double>> p) {
 
 int main(int argc, char* argv[])
 {
-	std::cout << "start!" << endl;
-	std::cout << "load ply:" << endl;	
-	
-	//source point cloud ply
-	string fileSource = "E://s1.ply";
-	//target point cloud ply
-	string fileTarget = "E://t1.ply";
-	//strore registration result xyz
-	string fileSaveSource = "E://RegistrationResult.xyz";
-	
-	vector<vector<double>> pointSource = Load_PLY(fileSource);
-	vector<vector<double>> pointTarget = Load_PLY(fileTarget);
-	vector<vector<double>> pointAlign;
-	std::cout << "load ply finished." << endl;
-	std::cout << "registration runing." << endl;
+	string objName1 = "_2000";
+	string objName2 = "_20000";
+	string objName3 = "_50000";
+	string objName4 = "_100000";
+	vector<string> list;
+	list.push_back(objName1);
+	list.push_back(objName2);
+	list.push_back(objName3);
+	list.push_back(objName4);
+	vector<double> timeRecordV;
+	vector<vector<double>> measureR;
 
-	KSSICP ki;
-	ki.KSSICP_init(pointSource, pointTarget, 8);	
-	ki.KSSICP_Registration(1000);
-	pointAlign = ki.pointAlign;
+	for (int i = 0; i < list.size(); i++) {
+		clock_t t1 = clock();
+		string objName = list[i];
+		string fileSource = "E://chen_database//_Registration//Time//" + objName + "source.ply";
+		string fileTarget = "E://chen_database//_Registration//Time//" + objName + "target.ply";
+		vector<vector<double>> pointSource = Load_PLY(fileSource);
+		vector<vector<double>> pointTarget = Load_PLY(fileTarget);
+		vector<vector<double>> pointAlign;
+		std::cout << "load ply finished." << endl;
+		std::cout << "registration runing." << endl;
 
-	std::cout << "registration finished." << endl;
-	std::cout << "Measurement:" << endl;
-	PCR_QM pq;
-	pq.PCR_QM_init(pointAlign, pointTarget);
-	vector<double> measure_i = pq.PCR_QM_ReturnResult();	
-	std::cout << "Registration Measure" << ":" << "MSE: " 
-		<< measure_i[0] << " RMSE: " << measure_i[1] << " MAE: " << measure_i[2] << endl;
-	save_PointCloud(pointAlign, fileSaveSource);
+		KSSICP ki;
+		ki.KSSICP_init(pointSource, pointTarget, 6);
+		ki.KSSICP_Registration(1000);
+		pointAlign = ki.pointAlign;
+		clock_t t2 = clock();
+		double timeRecord_i = (t2 - t1) / 1000.0;
+		timeRecordV.push_back(timeRecord_i);
+
+		std::cout << "registration finished." << endl;
+		std::cout << "Measurement:" << endl;
+		
+		PCR_QM pq;
+		pq.PCR_QM_init(pointAlign, pointTarget);
+		vector<double> measure_i = pq.PCR_QM_ReturnResult();
+		std::cout << "Registration Measure" << ":" << "MSE: "
+			<< measure_i[0] << " RMSE: " << measure_i[1] << " MAE: " << measure_i[2] << endl;
+		measureR.push_back(measure_i);
+	}	
+
+	for (int i = 0; i < list.size(); i++) {
+
+		std::cout << list[i] << ":" << "time: " << timeRecordV[i] << endl;
+
+	}
+
+	for (int i = 0; i < list.size(); i++) {
+
+		std::cout << list[i] << ":" << "MSE: " << measureR[i][0] << " RMSE: " << measureR[i][1] << " MAE: " << measureR[i][2] << endl;
+
+	}
 
 }
-
+*/
 
 
 

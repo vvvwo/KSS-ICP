@@ -48,6 +48,9 @@
     <ClCompile Include="Main_KSS_ICP.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Main_KSS_List.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">

@@ -29,6 +29,7 @@
 #include "initRegistrationKSS.hpp"
 #include "transferPC.hpp"
 #include "Method_AIVS_SimPro.hpp"
+#include <pcl/common/transforms.h>
 
 using namespace std;
 typedef pcl::PointXYZ PointT;
@@ -44,7 +45,7 @@ private:
 	double accurateG;
 
 public:
-
+	
 	vector<vector<double>> pointAlign;
 
 public:
@@ -82,14 +83,16 @@ public:
 		initRegistration_KSS ir;
 		ir.initRegistration_init(pointCloudS, pointCloudT, accurateG);
 		pointAlign = ir.initRegistration_Rotation(pointSource);
-		//vector<vector<double>> pointAlignSSS = ir.initRegistration_Rotation(pointCloudS);
+		vector<vector<double>> pointAlignSSS = ir.initRegistration_Rotation(pointCloudS);
 		//save_PointCloud(pointAlignSSS, "E://result.xyz");
 
 		pointSource.clear();
 		pointSource = pointAlign;
 		pointAlign.clear();
-		double resultFitness = shapeRegistration_ICP(iter);
+		double resultFitness = shapeRegistration_ICP(iter, pointAlignSSS, pointCloudT);
 
+		//resultFitness = shapeRegistration_ICP_Input(iter, resultFitness, pointAlignSSS, pointCloudT);
+		/*
 		if (resultFitness > 0.01) {
 			//additional function:
 			double Q = resultFitness;
@@ -107,10 +110,9 @@ public:
 				}			
 			}
 		}
+		*/
 	}
 	
-	
-
 	double shapeRegistration_ICP(int iter) {
 
 		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_s(new pcl::PointCloud<pcl::PointXYZ>);
@@ -162,6 +164,59 @@ public:
 
 		return result;
 	}
+
+	double shapeRegistration_ICP(int iter, vector<vector<double>> ps, vector<vector<double>> pt) {
+
+		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_s(new pcl::PointCloud<pcl::PointXYZ>);
+		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_t(new pcl::PointCloud<pcl::PointXYZ>);
+		for (int i = 0; i < ps.size(); i++)
+		{
+			pcl::PointXYZ cloud_i;
+			cloud_i.x = ps[i][0];
+			cloud_i.y = ps[i][1];
+			cloud_i.z = ps[i][2];
+			cloud_s->push_back(cloud_i);
+		}
+		for (int i = 0; i < pt.size(); i++)
+		{
+			pcl::PointXYZ cloud_i;
+			cloud_i.x = pt[i][0];
+			cloud_i.y = pt[i][1];
+			cloud_i.z = pt[i][2];
+			cloud_t->push_back(cloud_i);
+		}
+
+		pcl::PointCloud<pcl::PointXYZ> output;
+		pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
+		icp.setMaxCorrespondenceDistance(1);
+		icp.setTransformationEpsilon(1e-10);
+		icp.setEuclideanFitnessEpsilon(0.001);
+		icp.setMaximumIterations(iter);
+		icp.setInputSource(cloud_s);
+		icp.setInputTarget(cloud_t);
+		icp.align(output);
+
+		double result = icp.getFitnessScore();
+		std::cout << "has converged: " << icp.hasConverged() << std::endl;
+		std::cout << "score: " << icp.getFitnessScore() << std::endl;
+		std::cout << icp.getFinalTransformation() << std::endl;
+		pointAlign.clear();
+
+		
+
+		Eigen::Matrix<float, 4, 4> rt = icp.getFinalTransformation();
+
+		for (int i = 0; i < pointSource.size(); i++) {
+			vector<double> pi(3);
+			pi[0] = rt(0, 0) * pointSource[i][0] + rt(0, 1) * pointSource[i][1] + rt(0, 2) * pointSource[i][2] + rt(0, 3);
+			pi[1] = rt(1, 0) * pointSource[i][0] + rt(1, 1) * pointSource[i][1] + rt(1, 2) * pointSource[i][2] + rt(1, 3);
+			pi[2] = rt(2, 0) * pointSource[i][0] + rt(2, 1) * pointSource[i][1] + rt(2, 2) * pointSource[i][2] + rt(2, 3);
+			pointAlign.push_back(pi);
+		}	
+
+		return result;
+	}
+
 
 	double shapeRegistration_ICP_Input(int iter, double Q, vector<vector<double>> ps, vector<vector<double>> pt) {
 
@@ -233,7 +288,6 @@ public:
 
 	}
 	
-
 	vector<vector<double>> IntrinsicICP_pointSource() {
 
 		return pointSource;
