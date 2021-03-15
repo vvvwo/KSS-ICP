@@ -109,14 +109,14 @@ public:
 		cout << "pointPipeline_init run!" << endl;
 
 		vector<vector<double>> pdata; //point
-		vector<vector<double>> ndata; //normal		
+		//vector<vector<double>> ndata; //normal		
 
 		//2. normal estimation		
 		pdata = pointData;
-		ndata = ne.estimateNormal_PCL_MP_return(pdata);
+		//ndata = ne.estimateNormal_PCL_MP_return(pdata);
 
 		vector<int> borderdata = pointPipeline_Border(pdata);
-		br.BallRegion_init(pdata, ndata, borderdata);
+		br.BallRegion_init_withoutNormal(pdata, borderdata);
 	}
 
 private:

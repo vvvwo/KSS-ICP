@@ -81,7 +81,7 @@ public:
 		cout << "AIVS_Pro_init Curvature estimaition..." << endl;
 		//AIVS_NormalValue();		
 		//AIVS_NormalValue_Meshbased();
-		AIVS_NormalValue();
+		//AIVS_NormalValue();
 		//AIVS_NormalValue_Meshbased_HaveObj();
 		//init edge extraction
 		//cout << "AIVS_Pro_init Edge points estimaition..." << endl;
@@ -947,7 +947,7 @@ private:
 				int pIndex = sampleResult[i];
 				vector<double> pni;
 				pni = br.pointCloudData[pIndex];
-				pni.insert(pni.end(), br.pointNormal[pIndex].begin(), br.pointNormal[pIndex].end());				
+				//pni.insert(pni.end(), br.pointNormal[pIndex].begin(), br.pointNormal[pIndex].end());				
 				finalResult.push_back(pni);
 			}
 		}

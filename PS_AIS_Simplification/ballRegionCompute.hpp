@@ -111,6 +111,41 @@ public:
 	}
 		
 
+	void BallRegion_init_withoutNormal(std::vector<std::vector<double>> pointCloudData_input,
+		std::vector<int> pointBorder_input) {
+
+		boxNum = BallRegion_EstimateBoxScale(pointCloudData_input.size());
+		pointNumEsti = 12;
+		pointCloudData = pointCloudData_input;
+		//pointNormal = pointNormal_input;
+		pointBorder = pointBorder_input;
+
+		//std::cout << "Init BallRegion" << std::endl;
+		BallRegion_AchieveXYZ();//build boxes region
+		//std::cout << "BallRegion_BoxInput()" << std::endl;
+		BallRegion_BoxInput();//put point cloud into boxRegions
+		//std::cout << "Init kdtree" << std::endl;
+		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+		cloud->width = pointCloudData.size();
+		cloud->height = 1;
+		cloud->points.resize(cloud->width * cloud->height);
+		// fills a PointCloud with random data
+		for (int i = 0; i < pointCloudData.size(); i++)
+		{
+			pcl::PointXYZ pxyz;
+			cloud->points[i].x = pointCloudData[i][0];
+			cloud->points[i].y = pointCloudData[i][1];
+			cloud->points[i].z = pointCloudData[i][2];
+
+		}
+		kdtree.setInputCloud(cloud);
+		//std::cout << "Estimate Radius" << std::endl;
+		BallRegion_EstimateRadius_KDTree();//radius estimation
+		//std::cout << "Regular Normal" << std::endl;
+		//int start = 0;
+		//BallRegion_RegularNormal(start);
+	}
+
 	vector<vector<double>> BallRegion_ReturnBox(int pointIndex) {
 		vector<double> point_V = pointCloudData[pointIndex];
 		//int x_num2 = (point_V[0] - minXYZ[0]) / unitSize;
