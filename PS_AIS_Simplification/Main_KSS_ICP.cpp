@@ -129,11 +129,11 @@ int main(int argc, char* argv[])
 	std::cout << "load ply:" << endl;	
 	
 	//source point cloud ply
-	string fileSource = "E://chen_database//_Registration//ModelNet//_9source.ply";
+	string fileSource = "E://source.ply";
 	//target point cloud ply
-	string fileTarget = "E://chen_database//_Registration//ModelNet//_9target.ply";
+	string fileTarget = "E://target.ply";
 	//strore registration result .xyz
-	string fileSaveSource = "E://RegistrationResult.xyz";
+	string fileSaveSource = "E://registration.xyz";
 	
 	vector<vector<double>> pointSource = Load_PLY(fileSource);
 	vector<vector<double>> pointTarget = Load_PLY(fileTarget);

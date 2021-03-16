@@ -89,7 +89,11 @@ public:
 
 		vector<vector<double>> angleListLocal = ir.angleList;
 		vector<vector<double>> pointAlignSSS;
-		if (angleListLocal.size() > 0) {
+		pointAlignSSS = ir.initRegistration_Rotation(pointCloudS);
+		double E_d_init = shapeRegistration_ICP_Judge(iter, pointAlignSSS, pointCloudT);
+		pointAlignSSS.clear();
+
+		if (E_d_init > 0.001) {
 			double Q = 9999;
 			int angleIndex = 0;
 			for (int i = 0; i < angleListLocal.size(); i++) {
@@ -107,9 +111,7 @@ public:
 		else {
 			pointAlignSSS = ir.initRegistration_Rotation(pointCloudS);//save_PointCloud(pointAlignSSS, "E://result.xyz");
 			pointAlign = ir.initRegistration_Rotation(pointSource);
-		}
-
-		//save_PointCloud(pointAlignSSS, "E://simA.xyz");
+		}		
 
 		pointSource.clear();
 		pointSource = pointAlign;
@@ -259,10 +261,8 @@ public:
 		return result;	
 
 	}
-
 	
-
-	double shapeRegistration_ICP_Input(int iter, double Q, vector<vector<double>> ps, vector<vector<double>> pt) {
+	double shapeRegistration_ICP_Judge(int iter, vector<vector<double>> ps, vector<vector<double>> pt) {
 
 		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_s(new pcl::PointCloud<pcl::PointXYZ>);
 		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_t(new pcl::PointCloud<pcl::PointXYZ>);
@@ -293,25 +293,7 @@ public:
 		icp.setInputTarget(cloud_t);
 		icp.align(output);
 
-		double result = icp.getFitnessScore();
-		std::cout << "has converged: " << icp.hasConverged() << std::endl;
-		std::cout << "score: " << icp.getFitnessScore() << std::endl;
-		std::cout << icp.getFinalTransformation() << std::endl;
-
-		if (result < Q) {			
-			pointAlign.clear();
-			for (int i = 0; i < output.size(); i++) {
-				pcl::PointXYZ pi = output[i];
-				double xi = pi.x;
-				double yi = pi.y;
-				double zi = pi.z;
-				vector<double> ppi;
-				ppi.push_back(xi);
-				ppi.push_back(yi);
-				ppi.push_back(zi);
-				pointAlign.push_back(ppi);
-			}		
-		}
+		double result = icp.getFitnessScore();			
 		return result;
 	}
 

@@ -271,25 +271,22 @@ private:
 
 		irange = value.size(); 
 		jrange = value[0].size();
-		krange = value[0][0].size();
-       
-		if (errorT > 0.01) {
-			for (int i = 0; i < value.size(); i++) {
-				for (int j = 0; j < value[i].size(); j++) {
-					for (int k = 0; k < value[i][j].size(); k++) {
-						bool resultJudge = initRegistration_kernel(i, j, k);
-						if (resultJudge) {
-							vector<double> angleijk;
-							angleijk.push_back((double)i * 6.3 / (double)step);
-							angleijk.push_back((double)j * 6.3 / (double)step);
-							angleijk.push_back((double)k * 6.3 / (double)step);
-							angleList.push_back(angleijk);
-						}
-					}
-				}			
-			}		
-		}
+		krange = value[0][0].size();       
 
+		for (int i = 0; i < value.size(); i++) {
+			for (int j = 0; j < value[i].size(); j++) {
+				for (int k = 0; k < value[i][j].size(); k++) {
+					bool resultJudge = initRegistration_kernel(i, j, k);
+					if (resultJudge) {
+						vector<double> angleijk;
+						angleijk.push_back((double)i * 6.3 / (double)step);
+						angleijk.push_back((double)j * 6.3 / (double)step);
+						angleijk.push_back((double)k * 6.3 / (double)step);
+						angleList.push_back(angleijk);
+					}
+				}
+			}
+		}		
 
 		angle.push_back(iG);
 		angle.push_back(jG);
