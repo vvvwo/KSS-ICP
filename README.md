@@ -12,7 +12,7 @@ CGAL libiary
 
 OpenGL: freeglut64
 
-Update data:
+Update:
 
 2021/3/16 The second version of KSS-ICP, additional process is updated. 
 
