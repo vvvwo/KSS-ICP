@@ -80,37 +80,41 @@ public:
 		asps.AIVS_Pro_init(pps.br, "source");
 		vector<vector<double>> pointCloudS = asps.AIVS_simplification(pNumber);
 
+		//save_PointCloud(pointCloudT, "E://simT.xyz");
+		//save_PointCloud(pointCloudS, "E://simS.xyz");
+
 		initRegistration_KSS ir;
 		ir.initRegistration_init(pointCloudS, pointCloudT, accurateG);
-		pointAlign = ir.initRegistration_Rotation(pointSource);
-		vector<vector<double>> pointAlignSSS = ir.initRegistration_Rotation(pointCloudS);
-		//save_PointCloud(pointAlignSSS, "E://result.xyz");
+		//pointAlign = ir.initRegistration_Rotation(pointSource);
+
+		vector<vector<double>> angleListLocal = ir.angleList;
+		vector<vector<double>> pointAlignSSS;
+		if (angleListLocal.size() > 0) {
+			double Q = 9999;
+			int angleIndex = 0;
+			for (int i = 0; i < angleListLocal.size(); i++) {
+				vector<vector<double>> pointAlignSSSi = ir.initRegistration_Rotation_Angle(pointCloudS, angleListLocal[i]);//save_PointCloud(pointAlignSSS, "E://result.xyz");
+				double ri = shapeRegistration_ICP_AngleList(iter, Q, pointAlignSSSi, pointCloudT);
+				cout << "kernel" << i << ":" << ri << endl;
+				if (ri < Q && ri >= 0) {
+					Q = ri;
+					angleIndex = i;
+				}
+			}
+			pointAlignSSS = ir.initRegistration_Rotation_Angle(pointCloudS, angleListLocal[angleIndex]);
+			pointAlign = ir.initRegistration_Rotation_Angle(pointSource, angleListLocal[angleIndex]);
+		}
+		else {
+			pointAlignSSS = ir.initRegistration_Rotation(pointCloudS);//save_PointCloud(pointAlignSSS, "E://result.xyz");
+			pointAlign = ir.initRegistration_Rotation(pointSource);
+		}
+
+		//save_PointCloud(pointAlignSSS, "E://simA.xyz");
 
 		pointSource.clear();
 		pointSource = pointAlign;
 		pointAlign.clear();
 		double resultFitness = shapeRegistration_ICP(iter, pointAlignSSS, pointCloudT);
-
-		//resultFitness = shapeRegistration_ICP_Input(iter, resultFitness, pointAlignSSS, pointCloudT);
-		/*
-		if (resultFitness > 0.01) {
-			//additional function:
-			double Q = resultFitness;
-			for (int i = 0; i < 2; i++) {
-				vector<vector<double>> rx = ir.initRegistration_Rotation_Axis(pointAlign, 1, i);
-				for (int j = 0; j < 2; j++) {
-					vector<vector<double>> rxy = ir.initRegistration_Rotation_Axis(rx, 2, j);
-					for (int k = 0; k < 2; k++) {
-						vector<vector<double>> rxyz = ir.initRegistration_Rotation_Axis(rxy, 3, k);
-						double Qxyz = shapeRegistration_ICP_Input(100, Q, rxyz, pointTarget);
-						if (Qxyz < Q) {
-							Q = Qxyz;						
-						}
-					}				
-				}			
-			}
-		}
-		*/
 	}
 	
 	double shapeRegistration_ICP(int iter) {
@@ -200,9 +204,7 @@ public:
 		std::cout << "has converged: " << icp.hasConverged() << std::endl;
 		std::cout << "score: " << icp.getFitnessScore() << std::endl;
 		std::cout << icp.getFinalTransformation() << std::endl;
-		pointAlign.clear();
-
-		
+		pointAlign.clear();		
 
 		Eigen::Matrix<float, 4, 4> rt = icp.getFinalTransformation();
 
@@ -217,6 +219,48 @@ public:
 		return result;
 	}
 
+	//additional process
+	double shapeRegistration_ICP_AngleList(int iter, double Q, vector<vector<double>> ps, vector<vector<double>> pt) {
+
+		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_s(new pcl::PointCloud<pcl::PointXYZ>);
+		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_t(new pcl::PointCloud<pcl::PointXYZ>);
+		for (int i = 0; i < ps.size(); i++)
+		{
+			pcl::PointXYZ cloud_i;
+			cloud_i.x = ps[i][0];
+			cloud_i.y = ps[i][1];
+			cloud_i.z = ps[i][2];
+			cloud_s->push_back(cloud_i);
+		}
+		for (int i = 0; i < pt.size(); i++)
+		{
+			pcl::PointXYZ cloud_i;
+			cloud_i.x = pt[i][0];
+			cloud_i.y = pt[i][1];
+			cloud_i.z = pt[i][2];
+			cloud_t->push_back(cloud_i);
+		}
+
+		pcl::PointCloud<pcl::PointXYZ> output;
+		pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
+		icp.setMaxCorrespondenceDistance(1);
+		icp.setTransformationEpsilon(1e-10);
+		icp.setEuclideanFitnessEpsilon(0.001);
+		icp.setMaximumIterations(iter);
+		icp.setInputSource(cloud_s);
+		icp.setInputTarget(cloud_t);
+		icp.align(output);
+
+		double result = icp.getFitnessScore();
+		//std::cout << "has converged: " << icp.hasConverged() << std::endl;
+		//std::cout << "score: " << icp.getFitnessScore() << std::endl;
+		//std::cout << icp.getFinalTransformation() << std::endl;
+		//pointAlign.clear();
+		return result;	
+
+	}
+
+	
 
 	double shapeRegistration_ICP_Input(int iter, double Q, vector<vector<double>> ps, vector<vector<double>> pt) {
 

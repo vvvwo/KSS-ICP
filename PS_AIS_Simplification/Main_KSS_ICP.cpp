@@ -61,6 +61,7 @@ void save_PointCloud(vector<vector<double>> pointCloud, string Path) {
 
 }
 
+/*
 vector<vector<double>> loadPoints(string filePath) {
 
 	vector<vector<double>> normalVector;
@@ -120,6 +121,7 @@ vector<vector<double>> centerTransfer(vector<vector<double>> p) {
 
 
 }
+*/
 
 int main(int argc, char* argv[])
 {
@@ -127,10 +129,10 @@ int main(int argc, char* argv[])
 	std::cout << "load ply:" << endl;	
 	
 	//source point cloud ply
-	string fileSource = "E://s1.ply";
+	string fileSource = "E://chen_database//_Registration//ModelNet//_9source.ply";
 	//target point cloud ply
-	string fileTarget = "E://t1.ply";
-	//strore registration result xyz
+	string fileTarget = "E://chen_database//_Registration//ModelNet//_9target.ply";
+	//strore registration result .xyz
 	string fileSaveSource = "E://RegistrationResult.xyz";
 	
 	vector<vector<double>> pointSource = Load_PLY(fileSource);

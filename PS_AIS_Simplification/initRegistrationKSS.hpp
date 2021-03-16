@@ -29,8 +29,10 @@ class initRegistration_KSS{
 
 private:
 
-	double step = 8;
-
+	double step;
+	vector<vector<vector<double>>> value;
+	int irange, jrange, krange;
+	int r = 2; //kernel radius
 public:
 
 	double x_middle_S;//target middle point
@@ -41,6 +43,7 @@ public:
 	double z_middle;
 	double scale;//source transfer scale
 	vector<double> angle;
+	vector<vector<double>> angleList;
 	vector<vector<double>> pointSource;
 	vector<vector<double>> pointTarget;
 	pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
@@ -68,7 +71,7 @@ public:
 
 
 	}
-
+	
 	vector<vector<double>> initRegistration_Rotation(vector<vector<double>> sourceOri) {		
 
 		for (int i = 0; i < sourceOri.size(); i++) {
@@ -87,6 +90,24 @@ public:
 	
 	}
 	
+	vector<vector<double>> initRegistration_Rotation_Angle(vector<vector<double>> sourceOri, vector<double> angle_T) {
+
+		for (int i = 0; i < sourceOri.size(); i++) {
+			sourceOri[i][0] = sourceOri[i][0] + x_middle;
+			sourceOri[i][1] = sourceOri[i][1] + y_middle;
+			sourceOri[i][2] = sourceOri[i][2] + z_middle;
+			sourceOri[i][0] = x_middle_S + (sourceOri[i][0] - x_middle_S) * scale;
+			sourceOri[i][1] = y_middle_S + (sourceOri[i][1] - y_middle_S) * scale;
+			sourceOri[i][2] = z_middle_S + (sourceOri[i][2] - z_middle_S) * scale;
+		}
+
+		vector<vector<double>> r1 = initRegistration_Transfer(1, angle_T[0], sourceOri);
+		vector<vector<double>> r2 = initRegistration_Transfer(2, angle_T[1], r1);
+		vector<vector<double>> r3 = initRegistration_Transfer(3, angle_T[2], r2);
+		return r3;
+
+	}
+
 	vector<vector<double>> initRegistration_Rotation_Axis(vector<vector<double>> sourceOri, int axis, double angleV) {
 
 		for (int i = 0; i < sourceOri.size(); i++) {
@@ -218,28 +239,58 @@ private:
 		double errorT = 9999;
 		bool bJudge = true;		
 		double iG, jG, kG;
-		for (double i = 0; i < 6; i = i + 6 / step) {
-			cout << "iter:" << (6 - i) / (6 / step) << ";";
+
+		value.clear();
+
+		for (double i = 0; i < 6.3; i = i + 6.3 / step) {
+			cout << "iter:" << (6.3 - i) / (6.3 / step) << ";";
 			vector<vector<double>> ps_x = initRegistration_Transfer(1, i, pointSource);
-			for (double j = 0; j < 6; j = j + 6 / step) {
+			vector<vector<double>> vi;
+			for (double j = 0; j < 6.3; j = j + 6.3 / step) {
 				vector<vector<double>> ps_xy = initRegistration_Transfer(2, j, ps_x);
-				for (double k = 0; k < 6; k = k + 6 / step) {
+				vector<double> vj;
+				for (double k = 0; k < 6.3; k = k + 6.3 / step) {
 					vector<vector<double>> ps_xyz = initRegistration_Transfer(3, k, ps_xy);
-					double error_ijk = initRegistration_Error(ps_xyz);
-					//double error_ijk = initRegistration_Error_Ave(ps_xyz);
-					//double error_ijk = initRegistration_Error_Diff(ps_xyz);					
+					//double error_ijk = initRegistration_Error(ps_xyz);
+					double error_ijk = initRegistration_Error_Ave(ps_xyz);
+					//double error_ijk = initRegistration_Error_Diff(ps_xyz);	
+					vj.push_back(error_ijk);									
 					if (error_ijk < errorT) {
 						iG = i;
 						jG = j;
 						kG = k;
 						errorT = error_ijk;
 						ps_final.clear();
-						ps_final = ps_xyz;
-						
+						ps_final = ps_xyz;						
 					}
 				}
+				vi.push_back(vj);
 			}
+			value.push_back(vi);
 		}
+
+		irange = value.size(); 
+		jrange = value[0].size();
+		krange = value[0][0].size();
+       
+		if (errorT > 0.01) {
+			for (int i = 0; i < value.size(); i++) {
+				for (int j = 0; j < value[i].size(); j++) {
+					for (int k = 0; k < value[i][j].size(); k++) {
+						bool resultJudge = initRegistration_kernel(i, j, k);
+						if (resultJudge) {
+							vector<double> angleijk;
+							angleijk.push_back((double)i * 6.3 / (double)step);
+							angleijk.push_back((double)j * 6.3 / (double)step);
+							angleijk.push_back((double)k * 6.3 / (double)step);
+							angleList.push_back(angleijk);
+						}
+					}
+				}			
+			}		
+		}
+
+
 		angle.push_back(iG);
 		angle.push_back(jG);
 		angle.push_back(kG);
@@ -313,7 +364,6 @@ private:
 		}
 
 	}
-
 
 	vector<vector<double>> initRegistration_Transfer(int cord, double angle, vector<vector<double>> pointResample) {//cord 1:x, 2:y, 3:z; angle transfer angle
 
@@ -431,6 +481,49 @@ private:
 
 	}
 	
+	bool initRegistration_kernel(int i, int j, int k) {
+
+		double valueCenter = value[i][j][k];
+
+		int id = i - r;
+		int iu = i + r;
+		int jd = j - r;
+		int ju = j + r;
+		int kd = k - r;
+		int ku = k + r;
+
+		if (id < 0) {
+			id = 0;		
+		}
+		if (iu >= irange) {
+			iu = irange - 1;
+		}
+		if (jd < 0) {
+			jd = 0;
+		}
+		if (ju >= jrange) {
+			ju = jrange - 1;
+		}
+		if (kd < 0) {
+			kd = 0;
+		}
+		if (ku >= krange) {
+			ku = krange - 1;
+		}		
+	
+		for (int ii = id; ii <= iu; ii++) {
+			for (int jj = jd; jj <= ju; jj++) {
+				for (int kk = kd; kk <= ku; kk++) {					
+					if (valueCenter > value[ii][jj][kk]) {
+						return false;					
+					}
+				}
+			}		
+		}
+		return true;
+	
+	}
+
 };
 
 
