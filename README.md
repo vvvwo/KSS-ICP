@@ -14,6 +14,8 @@ OpenGL: freeglut64
 
 Update data:
 
+2021/3/16 The second version of KSS-ICP, additional process is updated. 
+
 2021/3/6 The first version of KSS-ICP, including construction of point cloud representation and alignment. 
 
 
