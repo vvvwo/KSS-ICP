@@ -12,6 +12,7 @@
 
 
 *********************************************************************************/
+
 /*
 #pragma region Include
 #pragma once
@@ -123,23 +124,20 @@ vector<vector<double>> centerTransfer(vector<vector<double>> p) {
 
 int main(int argc, char* argv[])
 {
-	string objName1 = "_2000";
-	string objName2 = "_20000";
-	string objName3 = "_50000";
-	string objName4 = "_100000";
+	
 	vector<string> list;
-	list.push_back(objName1);
-	list.push_back(objName2);
-	list.push_back(objName3);
-	list.push_back(objName4);
 	vector<double> timeRecordV;
 	vector<vector<double>> measureR;
 
 	for (int i = 0; i < list.size(); i++) {
 		clock_t t1 = clock();
 		string objName = list[i];
-		string fileSource = "E://chen_database//_Registration//Time//" + objName + "source.ply";
-		string fileTarget = "E://chen_database//_Registration//Time//" + objName + "target.ply";
+		string fileSource = "E://chen_database//_Registration//SHREC//" + objName + "source.ply";
+		string fileTarget = "E://chen_database//_Registration//SHREC//" + objName + "target.ply";
+
+		string fileSA = "E://chen_database//_Registration//_Result//KSS//SHREC//" + objName + "Align.xyz";
+		string fileST = "E://chen_database//_Registration//_Result//KSS//SHREC//" + objName + "Target.xyz";
+
 		vector<vector<double>> pointSource = Load_PLY(fileSource);
 		vector<vector<double>> pointTarget = Load_PLY(fileTarget);
 		vector<vector<double>> pointAlign;
@@ -147,7 +145,7 @@ int main(int argc, char* argv[])
 		std::cout << "registration runing." << endl;
 
 		KSSICP ki;
-		ki.KSSICP_init(pointSource, pointTarget, 6);
+		ki.KSSICP_init(pointSource, pointTarget, 8);
 		ki.KSSICP_Registration(1000);
 		pointAlign = ki.pointAlign;
 		clock_t t2 = clock();
@@ -157,6 +155,9 @@ int main(int argc, char* argv[])
 		std::cout << "registration finished." << endl;
 		std::cout << "Measurement:" << endl;
 		
+		save_PointCloud(pointAlign, fileSA);
+		save_PointCloud(pointTarget, fileST);
+
 		PCR_QM pq;
 		pq.PCR_QM_init(pointAlign, pointTarget);
 		vector<double> measure_i = pq.PCR_QM_ReturnResult();
@@ -179,6 +180,7 @@ int main(int argc, char* argv[])
 
 }
 */
+
 
 
 

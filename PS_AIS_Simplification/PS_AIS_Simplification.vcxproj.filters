@@ -62,9 +62,6 @@
     <ClInclude Include="View.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="pointProcessPipeline.hpp">
-      <Filter>头文件\pointcloud</Filter>
-    </ClInclude>
     <ClInclude Include="normalCompute.hpp">
       <Filter>头文件\pointcloud</Filter>
     </ClInclude>
@@ -92,9 +89,6 @@
     <ClInclude Include="GLM\glmVector.h">
       <Filter>头文件\Model</Filter>
     </ClInclude>
-    <ClInclude Include="denoising.hpp">
-      <Filter>头文件\pointcloud</Filter>
-    </ClInclude>
     <ClInclude Include="Method_Octree.hpp">
       <Filter>头文件\Simplification</Filter>
     </ClInclude>
@@ -104,22 +98,10 @@
     <ClInclude Include="pointPipeline.hpp">
       <Filter>头文件\pointcloud</Filter>
     </ClInclude>
-    <ClInclude Include="normalUpdate.hpp">
-      <Filter>头文件\pointcloud</Filter>
-    </ClInclude>
     <ClInclude Include="Method_CGAL.hpp">
       <Filter>头文件\Simplification</Filter>
     </ClInclude>
     <ClInclude Include="transferPC.hpp">
-      <Filter>头文件\Registration</Filter>
-    </ClInclude>
-    <ClInclude Include="shapeRegistration.hpp">
-      <Filter>头文件\Registration</Filter>
-    </ClInclude>
-    <ClInclude Include="initRegistration.hpp">
-      <Filter>头文件\Registration</Filter>
-    </ClInclude>
-    <ClInclude Include="intrinsicICP.hpp">
       <Filter>头文件\Registration</Filter>
     </ClInclude>
     <ClInclude Include="registrationMeasure.hpp">

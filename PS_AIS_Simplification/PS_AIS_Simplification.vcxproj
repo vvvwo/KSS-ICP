@@ -180,10 +180,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ballRegionCompute.hpp" />
-    <ClInclude Include="denoising.hpp" />
-    <ClInclude Include="initRegistration.hpp" />
     <ClInclude Include="initRegistrationKSS.hpp" />
-    <ClInclude Include="intrinsicICP.hpp" />
     <ClInclude Include="KSS_ICP.hpp" />
     <ClInclude Include="FileProcess\CBrowseDir.h" />
     <ClInclude Include="FileProcess\CStatDir.hpp" />
@@ -195,12 +192,9 @@
     <ClInclude Include="Method_CGAL.hpp" />
     <ClInclude Include="Method_Octree.hpp" />
     <ClInclude Include="normalCompute.hpp" />
-    <ClInclude Include="normalUpdate.hpp" />
     <ClInclude Include="PlyLoad.h" />
     <ClInclude Include="pointPipeline.hpp" />
-    <ClInclude Include="pointProcessPipeline.hpp" />
     <ClInclude Include="registrationMeasure.hpp" />
-    <ClInclude Include="shapeRegistration.hpp" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="trackball.h" />
     <ClInclude Include="transferPC.hpp" />

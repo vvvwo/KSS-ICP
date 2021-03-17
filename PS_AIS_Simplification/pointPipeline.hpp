@@ -20,7 +20,6 @@
 #include "LoadPointCloud.hpp"
 #include "normalCompute.hpp"
 #include "Method_Octree.hpp"
-#include "denoising.hpp"
 #include "ballRegionCompute.hpp"
 
 class pointPipeline {
@@ -34,7 +33,7 @@ private:
 	LoadPointCloud lpc;//load different kinds of files to achieve point cloud
 	NormalEstimation ne;//normal estimation for point cloud
 	PCL_octree pot;
-	DenoisingPD dpd;//denising the point cloud	
+	
 
 public:
 
@@ -61,25 +60,7 @@ public:
 			ne.estimateNormal_PCL_MP(lpc.pointSet_uniform);
 		}
 		pdata = lpc.pointSet_uniform;
-		ndata = ne.normalVector;
-
-		//3. pcl octree downsampling		
-		//vector<vector<vector<double>>> pndate = pot.PCL_Octree_Simplification(pdata, ndata);
-		//pdata.clear();
-		//pdata = pndate[0];
-		//ndata.clear();
-		//ndata = pndate[1];
-
-		//4. denoising
-		if (denoisingJudge) {
-			dpd.DenoisingPD_init(pdata, ndata);
-			dpd.DenoisingPD_MLS_Smooth(3, 20);
-			pdata.clear();
-			pdata = dpd.pCDenosing;
-			ndata.clear();
-			ndata = dpd.pCDenosingNormal;
-		}
-		
+		ndata = ne.normalVector;		
 		
 		vector<int> borderdata = pointPipeline_Border(pdata);
 		br.BallRegion_init(pdata, ndata, borderdata);		

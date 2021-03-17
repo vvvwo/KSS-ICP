@@ -25,13 +25,10 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include "pointProcessPipeline.hpp"
 #include "pointPipeline.hpp"
-#include "denoising.hpp"
 #include "pointCloudMeasure.hpp"
 #include "Method_AIVS_SimPro.hpp"
 #include "Method_Octree.hpp"
-#include "initRegistration.hpp"
 #include "transferPC.hpp"
 #include "KSS_ICP.hpp"
 #include "registrationMeasure.hpp"
@@ -61,79 +58,17 @@ void save_PointCloud(vector<vector<double>> pointCloud, string Path) {
 
 }
 
-/*
-vector<vector<double>> loadPoints(string filePath) {
-
-	vector<vector<double>> normalVector;
-
-	ifstream fin(filePath);
-	if (fin)
-	{
-		int numSum;
-		fin >> numSum;
-		for (int i = 0; i < numSum; i++) {
-			double x_i;
-			double y_i;
-			double z_i;
-			fin >> x_i >> y_i >> z_i;
-			vector<double> p_n_i;
-			p_n_i.push_back(x_i);
-			p_n_i.push_back(y_i);
-			p_n_i.push_back(z_i);
-			normalVector.push_back(p_n_i);
-		}
-		fin.close();
-		return normalVector;
-	}
-	else {
-		fin.close();
-		return normalVector;
-	}
-
-
-}
-
-vector<vector<double>> centerTransfer(vector<vector<double>> p) {
-
-	double xc = 0;
-	double yc = 0;
-	double zc = 0;
-
-	for (int i = 0; i < p.size(); i++) {
-
-		xc = xc + p[i][0];
-		yc = yc + p[i][1];
-		zc = zc + p[i][2];
-
-	}
-
-	xc = xc / p.size();
-	yc = yc / p.size();
-	zc = zc / p.size();
-
-	for (int i = 0; i < p.size(); i++) {
-		p[i][0] = p[i][0] - xc;
-		p[i][1] = p[i][1] - yc;
-		p[i][2] = p[i][2] - zc;
-	}
-
-	return p;
-
-
-}
-*/
-
 int main(int argc, char* argv[])
 {
 	std::cout << "start!" << endl;
 	std::cout << "load ply:" << endl;	
 	
 	//source point cloud ply
-	string fileSource = "E://source.ply";
+	string fileSource = "E://_1source.ply";
 	//target point cloud ply
-	string fileTarget = "E://target.ply";
+	string fileTarget = "E://_1target.ply";
 	//strore registration result .xyz
-	string fileSaveSource = "E://registration.xyz";
+	string fileSaveSource = "E://_1registration.xyz";
 	
 	vector<vector<double>> pointSource = Load_PLY(fileSource);
 	vector<vector<double>> pointTarget = Load_PLY(fileTarget);

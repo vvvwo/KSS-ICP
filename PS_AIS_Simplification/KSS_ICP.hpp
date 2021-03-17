@@ -93,7 +93,7 @@ public:
 		double E_d_init = shapeRegistration_ICP_Judge(iter, pointAlignSSS, pointCloudT);
 		pointAlignSSS.clear();
 
-		if (E_d_init > 0.001) {
+		if (E_d_init > 0.0005) {
 			double Q = 9999;
 			int angleIndex = 0;
 			for (int i = 0; i < angleListLocal.size(); i++) {
@@ -295,24 +295,7 @@ public:
 
 		double result = icp.getFitnessScore();			
 		return result;
-	}
-
-	void IntrinsicICP_Evaluate(int Number) {
-
-		vector<double> errorVector;
-
-		IntrinsicICP_P();
-
-		for (int i = 0; i < Number; i++) {
-			double errori = shapeRegistration_ICP(i);
-			errorVector.push_back(errori);
-		}
-
-		for (int i = 0; i < errorVector.size(); i++) {
-			cout << "iter " << i << ":" << errorVector[i] << endl;
-		}
-
-	}
+	}	
 	
 	vector<vector<double>> IntrinsicICP_pointSource() {
 
@@ -335,30 +318,7 @@ private:
 		pointSource = ir.initRegistration_Rotation(pointAlign);
 		pointAlign.clear();
 
-	}
-
-	void IntrinsicICP_P() {
-
-		pointPipeline ppt;
-		ppt.pointPipeline_init_point(pointTarget);
-		AIVS_Simplification_Pro asp;
-		asp.AIVS_Pro_init(ppt.br, "target");
-		vector<vector<double>> pointCloudT = asp.AIVS_simplification(5000);
-
-		pointPipeline pps;
-		pps.pointPipeline_init_point(pointSource);
-		AIVS_Simplification_Pro asps;
-		asps.AIVS_Pro_init(pps.br, "source");
-		vector<vector<double>> pointCloudS = asps.AIVS_simplification(5000);
-
-		initRegistration ir;
-		ir.initRegistration_init(pointCloudS, pointCloudT);
-		pointSource.clear();
-		pointSource = ir.pointSource;
-		pointTarget.clear();
-		pointTarget = ir.pointTarget;
-
-	}
+	}	
 
 	void save_PointCloud(vector<vector<double>> pointCloud, string Path) {
 
