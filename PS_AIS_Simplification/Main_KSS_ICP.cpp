@@ -64,11 +64,11 @@ int main(int argc, char* argv[])
 	std::cout << "load ply:" << endl;	
 	
 	//source point cloud ply
-	string fileSource = "E://_1source.ply";
+	string fileSource = "E://chen_database//_Registration//_MiddleResult//centuarPart.ply";
 	//target point cloud ply
-	string fileTarget = "E://_1target.ply";
+	string fileTarget = "E://chen_database//_Registration//_MiddleResult//centuar.ply";
 	//strore registration result .xyz
-	string fileSaveSource = "E://_1registration.xyz";
+	string fileSaveSource = "E://chen_database//_Registration//_MiddleResult//Registration.xyz";
 	
 	vector<vector<double>> pointSource = Load_PLY(fileSource);
 	vector<vector<double>> pointTarget = Load_PLY(fileTarget);

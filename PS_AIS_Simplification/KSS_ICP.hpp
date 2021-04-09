@@ -93,17 +93,28 @@ public:
 		double E_d_init = shapeRegistration_ICP_Judge(iter, pointAlignSSS, pointCloudT);
 		pointAlignSSS.clear();
 
-		if (E_d_init > 0.0005) {
+		//string middleResultT = "E://chen_database//_Registration//_MiddleResult//T.xyz";
+		//save_PointCloud(pointCloudT, middleResultT);
+
+		if (E_d_init > 0.0005) {//0.0005
 			double Q = 9999;
 			int angleIndex = 0;
 			for (int i = 0; i < angleListLocal.size(); i++) {
 				vector<vector<double>> pointAlignSSSi = ir.initRegistration_Rotation_Angle(pointCloudS, angleListLocal[i]);//save_PointCloud(pointAlignSSS, "E://result.xyz");
 				double ri = shapeRegistration_ICP_AngleList(iter, Q, pointAlignSSSi, pointCloudT);
+				//vector<vector<double>> pointAlighSSSTi = shapeRegistration_ICP_AngleListV(iter, Q, pointAlignSSSi, pointCloudT);
+
+				//string middleResult = "E://chen_database//_Registration//_MiddleResult//" + to_string(i) + ".xyz";
+				//string middleResult2 = "E://chen_database//_Registration//_MiddleResult//" + to_string(i) + "t.xyz";
+				//save_PointCloud(pointAlignSSSi, middleResult);
+				//save_PointCloud(pointAlighSSSTi, middleResult2);
+
 				cout << "kernel" << i << ":" << ri << endl;
 				if (ri < Q && ri >= 0) {
 					Q = ri;
 					angleIndex = i;
 				}
+
 			}
 			pointAlignSSS = ir.initRegistration_Rotation_Angle(pointCloudS, angleListLocal[angleIndex]);
 			pointAlign = ir.initRegistration_Rotation_Angle(pointSource, angleListLocal[angleIndex]);
@@ -262,6 +273,53 @@ public:
 
 	}
 	
+	vector<vector<double>> shapeRegistration_ICP_AngleListV(int iter, double Q, vector<vector<double>> ps, vector<vector<double>> pt) {
+
+		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_s(new pcl::PointCloud<pcl::PointXYZ>);
+		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_t(new pcl::PointCloud<pcl::PointXYZ>);
+		for (int i = 0; i < ps.size(); i++)
+		{
+			pcl::PointXYZ cloud_i;
+			cloud_i.x = ps[i][0];
+			cloud_i.y = ps[i][1];
+			cloud_i.z = ps[i][2];
+			cloud_s->push_back(cloud_i);
+		}
+		for (int i = 0; i < pt.size(); i++)
+		{
+			pcl::PointXYZ cloud_i;
+			cloud_i.x = pt[i][0];
+			cloud_i.y = pt[i][1];
+			cloud_i.z = pt[i][2];
+			cloud_t->push_back(cloud_i);
+		}
+
+		pcl::PointCloud<pcl::PointXYZ> output;
+		pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
+		icp.setMaxCorrespondenceDistance(1);
+		icp.setTransformationEpsilon(1e-10);
+		icp.setEuclideanFitnessEpsilon(0.001);
+		icp.setMaximumIterations(iter);
+		icp.setInputSource(cloud_s);
+		icp.setInputTarget(cloud_t);
+		icp.align(output);
+
+		vector<vector<double>> registrationT;
+		for (int i = 0; i < output.size(); i++) {
+			pcl::PointXYZ pi = output[i];
+			double xi = pi.x;
+			double yi = pi.y;
+			double zi = pi.z;
+			vector<double> ppi;
+			ppi.push_back(xi);
+			ppi.push_back(yi);
+			ppi.push_back(zi);
+			registrationT.push_back(ppi);
+		}
+
+		return registrationT;
+	}
+
 	double shapeRegistration_ICP_Judge(int iter, vector<vector<double>> ps, vector<vector<double>> pt) {
 
 		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_s(new pcl::PointCloud<pcl::PointXYZ>);
