@@ -15,6 +15,12 @@ PointTarget.ply: input target point cloud.
 The result is output into a .xyz format file.
 
 Update:
+
 2021/09/17 By Dr Chenlei Lv
 
 Using "start_0.2.bat" to align input point clouds by KSS-ICP Version 0.2.
+
+2021/10/15 By Dr Chenlei Lv
+
+Using "start_Cuda.bat" to align input point clouds by KSS-ICP with Cuda acceleration.
+
