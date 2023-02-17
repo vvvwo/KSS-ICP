@@ -18,6 +18,7 @@ If you find our work useful in your research, please consider citing:
          year={2022}
      }
 
+## Implementation
 This project is implemented by VS2019, C++.
 
 The addtional libiary should be included:
@@ -28,7 +29,7 @@ CGAL libiary
 
 OpenGL: freeglut64
 
-Update:
+## Update
 
 2023/2/16 The paper of KSS-ICP is accepted by IEEE TIP. 
 
